@@ -1,0 +1,94 @@
+{
+  "bank": "SoFi",
+  "accounts": {
+    "checking": "3192",
+    "savings": "0070"
+  },
+  "csv_format": {
+    "columns": ["Date", "Description", "Type", "Amount", "Current balance", "Status"],
+    "date_format": "YYYY-MM-DD",
+    "amount_convention": "single_column_signed",
+    "note": "Positive = deposit, Negative = debit/withdrawal"
+  },
+  "type_values": [
+    "DEBIT_CARD",
+    "DEPOSIT",
+    "WITHDRAWAL",
+    "DIRECT_DEPOSIT",
+    "DIRECT_PAY",
+    "INTEREST_EARNED",
+    "ATM",
+    "OTHER"
+  ],
+  "employer": {
+    "name": "Akcelita LLC",
+    "payroll_provider": "Justworks",
+    "pay_schedule": "quincenal",
+    "pay_dates": [15, 30],
+    "base_pay": 1300,
+    "note": "Paycheck goes to savings, variable amount"
+  },
+  "vaults": {
+    "House": {
+      "budget": 500,
+      "frequency": "monthly",
+      "note": "BANCO POPULAR mortgage payment"
+    },
+    "Apple": {
+      "budget": 190,
+      "frequency": "monthly",
+      "note": "Apple Card payment (APPLECARD GSBANK)"
+    },
+    "Seguro del carro": {
+      "budget": 128,
+      "frequency": "monthly",
+      "note": "PROGRESSIVE car insurance"
+    },
+    "Gasto fijo internet, luz, agua": {
+      "budget": 150,
+      "frequency": "monthly",
+      "note": "Fixed bills: internet, electricity, water"
+    },
+    "Gasto hogar dia a dia": {
+      "budget": 100,
+      "frequency": "monthly",
+      "note": "Daily household expenses"
+    },
+    "Christian dinero personal": {
+      "budget": 200,
+      "frequency": "monthly",
+      "note": "Personal spending money"
+    },
+    "Agua": {
+      "budget": 50,
+      "frequency": "monthly",
+      "note": "Water bill"
+    },
+    "Ocio": {
+      "budget": 50,
+      "frequency": "monthly",
+      "note": "Entertainment/leisure"
+    },
+    "Saving-cell phone": {
+      "budget": 40,
+      "frequency": "monthly",
+      "note": "Cell phone savings"
+    },
+    "recortar": {
+      "budget": 20,
+      "frequency": "monthly",
+      "note": "Haircuts"
+    },
+    "sua": {
+      "budget": 34,
+      "frequency": "monthly",
+      "note": "Suannette's allowance"
+    }
+  },
+  "vault_transfer_patterns": {
+    "from_vault": "From {vault_name} Vault",
+    "to_vault": "To {vault_name} Vault",
+    "from_savings": "From Savings - 0070",
+    "to_savings": "To Savings - 0070"
+  }
+}

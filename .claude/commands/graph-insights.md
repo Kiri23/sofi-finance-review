@@ -24,19 +24,24 @@ ROOT_OPERATIONS_DIR: CLAUDE.md: ROOT_OPERATIONS_DIR
 
 ## Graph Types to Generate
 
+### Expense Exclusion Rule
+Before computing any totals, check if `ROOT_OPERATIONS_DIR/known_mappings.json` exists. If it does, read the `exclude_from_expenses` array (e.g., `["Credit Card Payment", "Internal Transfer"]`). All graphs showing expense totals MUST exclude these categories.
+
+**DO NOT generate any "Income vs Expenses" or "Savings Rate" graphs.** Checking account deposits are internal vault transfers, not income. This dashboard is strictly about expenses.
+
 ### Required Standard Graphs (run multiple times)
 1. **Balance Over Time** - Line chart showing balance progression
-2. **Category Breakdown** - Pie chart of spending by category
+2. **Category Breakdown** - Pie chart of spending by category (excluding categories in exclude_from_expenses)
 3. **Monthly Spending Trend** - Bar chart of total spending per category
-4. **Income vs Expenses** - Comparison bar chart
-5. **Top Merchants** - Horizontal bar chart of top spending destinations
+4. **Top Merchants** - Horizontal bar chart of top spending destinations
+5. **Spending by Weekday** - Bar chart of spending patterns per day of week
 
 ### Novel/Interesting Graphs
 6. **Daily Spending Pattern** - Heatmap of spending by day of week
 7. **Category Trend Lines** - Multi-line chart showing category spending over time
-8. **Savings Rate** - Line chart of (income - spending) / income over time
-9. **Large Transaction Highlights** - Scatter plot highlighting outliers
-10. **Recurring vs One-time** - Stacked area chart
+8. **Large Transaction Highlights** - Scatter plot highlighting outliers
+9. **Recurring vs One-time** - Stacked area chart
+10. **Spending Velocity** - Cumulative spending rate over time
 
 ## Graph Requirements
 

@@ -1,0 +1,87 @@
+{
+  "overrides": [
+    {
+      "description_contains": "From",
+      "description_matches": "^From .+ Vault$",
+      "category": "Vault Transfer",
+      "note": "Money moved from a vault to checking — tracked spending from envelope"
+    },
+    {
+      "description_contains": "To",
+      "description_matches": "^To .+ Vault$",
+      "category": "Vault Allocation",
+      "note": "Money moved from checking to a vault — envelope allocation"
+    },
+    {
+      "description_contains": "From Savings - 0070",
+      "category": "Internal Transfer",
+      "note": "Transfer from SoFi savings to checking"
+    },
+    {
+      "description_contains": "To Savings - 0070",
+      "category": "Internal Transfer",
+      "note": "Transfer from SoFi checking to savings"
+    },
+    {
+      "description_contains": "APPLECARD GSBANK",
+      "category": "Credit Card Payment",
+      "note": "Payment to Apple Card — excluded from expenses (purchases tracked separately)"
+    },
+    {
+      "description_contains": "BANCO POPULAR",
+      "amount": 1000,
+      "category": "Housing",
+      "note": "Monthly house payment via BANCO POPULAR"
+    },
+    {
+      "description_contains": "BANCO POPULAR",
+      "amount_max": 100,
+      "category": "Internal Transfer",
+      "note": "Small BANCO POPULAR transactions are internal transfers between accounts"
+    },
+    {
+      "description_contains": "PROGRESSIVE FINA",
+      "category": "Insurance",
+      "note": "Progressive car insurance payment"
+    },
+    {
+      "description_contains": "Roberto Del Valle Ramos",
+      "category": "Subscriptions",
+      "note": "Apple Music subscription via Roberto"
+    },
+    {
+      "description_contains": "Klarna",
+      "category": "Suannette - Klarna",
+      "note": "Suannette's Klarna buy-now-pay-later purchases"
+    },
+    {
+      "description_contains": "Interest earned",
+      "category": "Interest",
+      "note": "SoFi interest earned on account balance"
+    },
+    {
+      "description_contains": "Miscellaneous Credit",
+      "category": "Other Income",
+      "note": "Miscellaneous credit from SoFi"
+    },
+    {
+      "description_contains": "Canceled withdrawal",
+      "category": "Internal Transfer",
+      "note": "Canceled/reversed withdrawal"
+    }
+  ],
+  "exclude_from_expenses": [
+    "Credit Card Payment",
+    "Internal Transfer",
+    "Vault Transfer",
+    "Vault Allocation",
+    "Interest",
+    "Other Income",
+    "Income"
+  ],
+  "flag_rules": {
+    "amount_threshold": 200,
+    "flag_categories": ["Other", "Loan/Debt Payment"],
+    "flag_description_patterns": ["BANCO POPULAR"]
+  }
+}

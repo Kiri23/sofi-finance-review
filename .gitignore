@@ -62,6 +62,15 @@ apps/agentic-finance-review/data/*/
 # Keep the mock datasets
 !apps/agentic-finance-review/data/mock_dataset_2026/
 
+# Keep config files in real data directory (but not CSVs or generated output)
+!apps/agentic-finance-review/data/real_2025_2026/
+apps/agentic-finance-review/data/real_2025_2026/*
+!apps/agentic-finance-review/data/real_2025_2026/known_mappings.json
+!apps/agentic-finance-review/data/real_2025_2026/sofi_vault_config.json
+
+# Real bank data - NEVER commit
+input-data/
+
 # AI docs - ignore scraped content except README
 ai_docs/*
 !ai_docs/README.md

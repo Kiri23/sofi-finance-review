@@ -77,11 +77,13 @@ Modern, minimalist fintech aesthetic inspired by premium finance apps:
    - Minimal, clean
 
 2. **Summary Metrics Row**
-   - Total Income (green)
-   - Total Expenses (red)
-   - Net Cash Flow (green/red based on value)
+   - Total Real Expenses (red) — this is the primary metric
+   - Avg Daily Spending
    - Transaction Count
+   - Number of Spending Categories
+   - Largest Category (name + amount + % of total)
    - Each in its own card with large number + label
+   - **DO NOT show "Total Income" or "Total Deposits"** — checking account deposits are internal vault transfers (not income), and the user does not want income assumptions. This dashboard is strictly about expenses.
 
 3. **Graphs Section**
    - **Two-column grid layout**
@@ -129,11 +131,12 @@ Modern, minimalist fintech aesthetic inspired by premium finance apps:
 
 1. Read directory path from `$ARGUMENTS`
 2. Load CSV data and compute summaries:
-   - Total income (sum of deposits)
-   - Total expenses (sum of withdrawals)
-   - Net cash flow
+   - Check if `ROOT_OPERATIONS_DIR/known_mappings.json` exists. If it does, read the `exclude_from_expenses` array (e.g., `["Credit Card Payment", "Internal Transfer"]`)
+   - Total Real Expenses = sum of withdrawals WHERE category is NOT in exclude_from_expenses list AND category is NOT "Interest" or income-related
+   - **DO NOT compute or display "Total Income" or "Total Deposits"** — checking deposits are internal vault transfers, not income. The user explicitly does not want income shown.
    - Transaction count
-   - Category totals
+   - Category totals (only for real expense categories, excluding those in exclude_from_expenses)
+   - Add an exclusion notice banner showing which categories are excluded and their total amounts
 3. Find all PNG files in assets/ directory
 4. Generate HTML with:
    - Embedded CSS following the design system above

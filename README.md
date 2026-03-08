@@ -1,3 +1,5 @@
+<!-- type: hybrid -->
+<!-- source: https://youtu.be/u5GkG71PkR0 -->
 # Agentic Finance Review (Specialized Self-Validating Agents)
 
 Autonomous finance review powered by Claude Code agentics with **specialized self-validating agents**.
