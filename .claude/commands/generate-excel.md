@@ -57,11 +57,56 @@ Summary overview of the period's finances.
 | N+2 | **Sin Vault (Variable Expenses)** |
 | N+3 | Each category: name, total, count |
 | N+M | **Total Sin Vault:** ${amount} (bold, red) |
-| N+M+2 | **Sobrante:** ${amount} (bold, green if positive, red if negative) |
-| N+M+3 | **Formula:** income - vaults - sin_vault = sobrante |
+| N+M+2 | *(empty row)* |
+| N+M+3 | **Gastos Sorpresa** (bold, 12pt, orange fill #FFF2CC) |
+| N+M+4 | Each surprise/impulse expense: date, description, amount |
+| N+M+X | **Total Gastos Sorpresa:** ${amount} (bold, orange) |
+| N+M+X+2 | **Vault Desviada (Meta Fallida)** (bold, 12pt, red fill #FFC7CE) |
+| N+M+X+3 | Each vault where money was withdrawn but NOT used for its intended purpose: vault name, amount withdrawn, expected payment, status |
+| N+M+X+Y | **Total Vault Desviada:** ${amount} (bold, red) |
+| N+M+X+Y+2 | *(empty row)* |
+| N+M+X+Y+3 | **Sobrante:** ${amount} (bold, green if positive, red if negative) |
+| N+M+X+Y+4 | **Formula:** income - vaults - sin_vault = sobrante |
+
+### Gastos Sorpresa Section
+
+Surprise/impulse expenses — transactions tagged as `surprise` or `impulse` in the CSV, or transactions that are non-recurring and don't match any known pattern. These are expenses the user didn't plan for.
+
+**Detection logic (from vault_analysis.json):**
+- If `vault_analysis.json` has a `gastos_sorpresa` field, use it directly
+- Otherwise, identify sin-vault transactions that are NOT in categories typically recurring (subscriptions, bills, insurance) — things like entertainment, shopping, one-time food splurges
+
+**Columns:** Date | Description | Category | Amount
+
+**Formatting:**
+- Section header: orange fill (#FFF2CC), bold
+- Each row: date, description, category, amount
+- Total row: bold, orange text
+
+### Vault Desviada (Meta Fallida) Section
+
+When money was withdrawn from a vault ("From X Vault") but the intended payment for that vault's purpose was NOT made during the period. This signals a failed budget goal.
+
+**Detection logic:**
+- For each vault in `sofi_vault_config.json`, check:
+  1. Was there a "From X Vault" withdrawal? (money left the vault)
+  2. Was the corresponding payment made? Match using the vault's `note` field:
+     - House vault → look for BANCO POPULAR payment
+     - Apple vault → look for APPLECARD GSBANK payment
+     - Seguro del carro vault → look for PROGRESSIVE payment
+     - Gasto fijo internet, luz, agua → look for utility payments
+  3. If money was withdrawn but payment NOT found → **vault desviada**
+- Compare amount withdrawn vs expected payment amount
+
+**Columns:** Vault Name | Amount Withdrawn | Expected Payment | Status (Pagado/Desviado)
+
+**Formatting:**
+- Section header: red fill (#FFC7CE), bold
+- "Desviado" status: red text, bold
+- "Pagado" status: green text
+- Total row: bold, sum of desviado amounts only
 
 ### Formatting
-- Column A: Labels (width 35)
 - Column B: Amounts (width 15, number format `$#,##0.00`)
 - Column C: Budget/Notes (width 15)
 - Column D: Difference (width 15)
@@ -87,6 +132,8 @@ Breakdown of where money went, suitable for creating a pie chart.
 
 - Include ALL vault allocations as "Vault: {name}"
 - Include ALL sin-vault categories as "Sin Vault: {category}"
+- Include "Gastos Sorpresa" total as its own row (if any)
+- Include "Vault Desviada" total as its own row (if any)
 - Include Sobrante as the final row
 - This data can be used to create a pie chart in Excel
 
