@@ -145,6 +145,50 @@ def validate_vault_analysis(file_path: Path) -> list[str]:
                 f"doesn't match sin_vault_expenses.total ({sin_vault_total:.2f})"
             )
 
+    # Validate rescate_ahorro (optional but validated if present)
+    if "rescate_ahorro" in data:
+        rescate = data["rescate_ahorro"]
+        if "total" not in rescate:
+            errors.append("rescate_ahorro.total is missing")
+        elif not isinstance(rescate["total"], (int, float)):
+            errors.append(f"rescate_ahorro.total must be numeric, got {type(rescate['total']).__name__}")
+        elif rescate["total"] < 0:
+            errors.append(f"rescate_ahorro.total must be >= 0, got {rescate['total']}")
+        else:
+            if rescate["total"] > 0:
+                log(f"  RED FLAG: rescate_ahorro = ${rescate['total']:.2f} (target: $0)")
+            # Validate transaction amounts sum
+            if "transactions" in rescate:
+                r_total = sum(t.get("amount", 0) for t in rescate["transactions"])
+                if abs(r_total - rescate["total"]) > 0.01:
+                    errors.append(
+                        f"rescate_ahorro.transactions total ({r_total:.2f}) "
+                        f"doesn't match rescate_ahorro.total ({rescate['total']:.2f})"
+                    )
+
+    # Validate gastos_sorpresa (optional but validated if present)
+    if "gastos_sorpresa" in data:
+        sorpresa = data["gastos_sorpresa"]
+        if "total" not in sorpresa:
+            errors.append("gastos_sorpresa.total is missing")
+        elif not isinstance(sorpresa["total"], (int, float)):
+            errors.append(f"gastos_sorpresa.total must be numeric, got {type(sorpresa['total']).__name__}")
+        else:
+            # gastos_sorpresa must be a subset of sin_vault_expenses
+            if sorpresa["total"] > sin_vault_total + 0.01:
+                errors.append(
+                    f"gastos_sorpresa.total ({sorpresa['total']:.2f}) cannot exceed "
+                    f"sin_vault_expenses.total ({sin_vault_total:.2f})"
+                )
+
+    # Validate vault_desviada (optional but validated if present)
+    if "vault_desviada" in data:
+        desviada = data["vault_desviada"]
+        if "total" not in desviada:
+            errors.append("vault_desviada.total is missing")
+        elif not isinstance(desviada["total"], (int, float)):
+            errors.append(f"vault_desviada.total must be numeric, got {type(desviada['total']).__name__}")
+
     return errors
 
 

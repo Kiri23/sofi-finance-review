@@ -45,28 +45,55 @@ Use a Python inline script with openpyxl. Run with `uv run`:
 
 Summary overview of the period's finances.
 
-| Row | Content |
-|-----|---------|
-| 1 | **Title:** "Resumen Quincenal - {Month} {Year}" (bold, 16pt) |
-| 3 | **Income** |
-| 4 | Each income source with date and amount |
-| 5 | **Total Income:** ${amount} (bold, green) |
-| 7 | **Vault Allocations** |
-| 8+ | Each vault: name, allocated, budget, difference |
-| N | **Total Vault Allocations:** ${amount} (bold) |
-| N+2 | **Sin Vault (Variable Expenses)** |
-| N+3 | Each category: name, total, count |
-| N+M | **Total Sin Vault:** ${amount} (bold, red) |
-| N+M+2 | *(empty row)* |
-| N+M+3 | **Gastos Sorpresa** (bold, 12pt, orange fill #FFF2CC) |
-| N+M+4 | Each surprise/impulse expense: date, description, amount |
-| N+M+X | **Total Gastos Sorpresa:** ${amount} (bold, orange) |
-| N+M+X+2 | **Vault Desviada (Meta Fallida)** (bold, 12pt, red fill #FFC7CE) |
-| N+M+X+3 | Each vault where money was withdrawn but NOT used for its intended purpose: vault name, amount withdrawn, expected payment, status |
-| N+M+X+Y | **Total Vault Desviada:** ${amount} (bold, red) |
-| N+M+X+Y+2 | *(empty row)* |
-| N+M+X+Y+3 | **Sobrante:** ${amount} (bold, green if positive, red if negative) |
-| N+M+X+Y+4 | **Formula:** income - vaults - sin_vault = sobrante |
+### Layout
+
+Use **Column B** for labels and **Column C** for amounts (Column A is left empty for indentation). This matches the existing Excel layout from the manual quincena workbook.
+
+| Section | Content |
+|---------|---------|
+| **Title** | B2: "QUINCENA: {Month Start} → {Month End}, {Year}" (bold, 14pt) |
+| | B3: "SoFi Bank · Paycheck Akcelita" (subtitle, gray) |
+| **INGRESO** | B5: section header |
+| | B6+: Each income source (date + description), C: amount, D: % of income |
+| **GASTOS FIJOS — Sobres (Vaults)** | B: section header, C: "Presupuestado", D: "% Ingreso", E: "Destino" |
+| | B: Each vault indented ("  Casa (Hipoteca)"), C: amount, D: % of income, E: payment destination |
+| | B: "  Subtotal Gastos Fijos", C: total |
+| **GASTOS VARIABLES — Sin Sobre** | B: section header, C: "Total", D: "% Ingreso", E: "Transacciones" |
+| | B: Each category indented, C: total, D: %, E: merchant names |
+| | B: "  Subtotal Gastos Variables", C: total |
+| **BALANCE** | B: section header |
+| | B: "  Ingreso", C: total income |
+| | B: "  (−) Gastos Fijos (Vaults)", C: negative total |
+| | B: "  (−) Gastos Variables", C: negative total |
+| | B: "  SOBRANTE", C: amount, D: % of income |
+| **Saldos reales** | B: current account balances (Savings, Checking, Interest) |
+| **RESCATE DE AHORRO** | B: section header (red fill #FFC7CE) — RED FLAG |
+| | B: "Dinero sacado de ahorro para cubrir la quincena" (italic, gray) |
+| | B: Each "From Savings" transfer with date, C: amount |
+| | B: "  Total Rescate de Ahorro", C: total (bold, red) |
+| | B: "  Meta: $0 por quincena" (italic, red) |
+| **GASTOS SORPRESA** | B: section header (orange #C65911) |
+| | B: Each surprise expense indented (description + date), C: amount, D: category (orange fill #FFF2CC) |
+| | B: "  Subtotal Gastos Sorpresa", C: total, D: % of income |
+| **VAULT DESVIADA (META FALLIDA)** | B: section header (red #C00000) |
+| | B: "  Vault", C: "Retirado", D: "Pago Hecho?", E: "Status" |
+| | B: Each vault row, C: withdrawn amount, D: yes/no, E: Pagado/Desviado |
+| | B: "  Subtotal Vault Desviada", C: total (red, bold) |
+
+### Rescate de Ahorro Section (Red Flag)
+
+Money pulled from savings to cover the current paycheck period. This is the most critical warning — it means the paycheck wasn't enough.
+
+**Source data:** `vault_analysis.json` → `rescate_ahorro` field
+- List each "From Savings - 0070" transfer with date and amount
+- Show total in bold red
+- Include target note: "Meta: $0 por quincena"
+
+**Formatting:**
+- Section header: red fill (#FFC7CE), bold, dark red text (#C00000)
+- Data rows: light red fill
+- Total row: bold, dark red text
+- Placed BEFORE Gastos Sorpresa (it's more critical)
 
 ### Gastos Sorpresa Section
 
@@ -107,13 +134,18 @@ When money was withdrawn from a vault ("From X Vault") but the intended payment 
 - Total row: bold, sum of desviado amounts only
 
 ### Formatting
-- Column B: Amounts (width 15, number format `$#,##0.00`)
-- Column C: Budget/Notes (width 15)
-- Column D: Difference (width 15)
-- Header rows: bold, larger font
-- Positive sobrante: green fill (#C6EFCE)
-- Negative sobrante: red fill (#FFC7CE)
-- Vault rows: light blue fill (#DAEEF3)
+- Column A: Empty (spacer)
+- Column B: Labels (width 40)
+- Column C: Amounts (width 15, number format `#,##0.00`)
+- Column D: Percentages (width 15, format `0.0%`) or secondary data
+- Column E: Notes/destinations (width 25)
+- Section headers: bold, 11pt
+- Subtotal rows: bold
+- Positive sobrante: green text (#006100)
+- Negative sobrante: red text (#C00000)
+- Rescate de Ahorro rows: light red fill (#FFC7CE)
+- Gastos Sorpresa rows: light orange fill (#FFF2CC)
+- Indented items use "  " (2 spaces) prefix in Column B
 
 ## Sheet 2: Distribucion
 
@@ -132,6 +164,7 @@ Breakdown of where money went, suitable for creating a pie chart.
 
 - Include ALL vault allocations as "Vault: {name}"
 - Include ALL sin-vault categories as "Sin Vault: {category}"
+- Include "Rescate de Ahorro" total as its own row (if any, red flag)
 - Include "Gastos Sorpresa" total as its own row (if any)
 - Include "Vault Desviada" total as its own row (if any)
 - Include Sobrante as the final row

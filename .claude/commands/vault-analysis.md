@@ -64,6 +64,30 @@ Write `DIR_PATH/vault_analysis.json` with this structure:
       {"date": "2026-02-08", "description": "WENDYS", "category": "food", "amount": 5.35}
     ]
   },
+  "rescate_ahorro": {
+    "total": 105.00,
+    "transactions": [
+      {"date": "2026-02-26", "description": "From Savings - 0070", "amount": 35.00},
+      {"date": "2026-02-27", "description": "From Savings - 0070", "amount": 20.00}
+    ],
+    "note": "Money pulled from savings to cover the paycheck period. Target: $0. Red flag if > 0."
+  },
+  "gastos_sorpresa": {
+    "total": 77.19,
+    "transactions": [
+      {"date": "2026-03-03", "description": "Caribbean Cinemas", "category": "entertainment", "amount": 14.86},
+      {"date": "2026-03-04", "description": "Marshalls #631", "category": "shopping", "amount": 20.06}
+    ],
+    "note": "Non-recurring, non-essential expenses (entertainment, shopping, impulse food). Subset of sin_vault."
+  },
+  "vault_desviada": {
+    "total": 0,
+    "vaults": [
+      {"vault": "Seguro del carro", "withdrawn": 90.00, "payment_found": true, "payment_to": "PROGRESSIVE", "status": "Pagado"},
+      {"vault": "House", "withdrawn": 1000.00, "payment_found": true, "payment_to": "BANCO POPULAR", "status": "Pagado"}
+    ],
+    "note": "Vaults where money was withdrawn but NOT used for intended purpose. Total = sum of Desviado only."
+  },
   "sobrante": 909.08,
   "formula": "income (2600.00) - vault_allocations (1462.00) - sin_vault_expenses (228.92) = sobrante (909.08)",
   "math_check": true
@@ -94,12 +118,36 @@ Write `DIR_PATH/vault_analysis.json` with this structure:
 - Group by category with totals and transaction counts
 - List every sin-vault transaction for the detail view
 
-### Step 4: Calculate Sobrante
+### Step 4: Rescate de Ahorro (Red Flag)
+- Find all "From Savings - 0070" or "Internal Transfer" deposits into checking
+- These represent money pulled from savings because the paycheck wasn't enough
+- Sum total and list each transaction
+- Target is $0 — any amount here is a red flag
+
+### Step 5: Identify Gastos Sorpresa
+- Subset of sin-vault expenses that are non-recurring and non-essential
+- Categories that qualify: entertainment, shopping, tienda/ropa, impulse food (one-time restaurant visits, fast food splurges)
+- Categories that do NOT qualify (they're expected variable costs): gas, supermercado, farmacia, subscriptions, bills
+- List each surprise expense with date, description, category, amount
+
+### Step 6: Detect Vault Desviada (Meta Fallida)
+- For each vault in `sofi_vault_config.json`:
+  1. Find "From X Vault" withdrawals (money left the vault to checking)
+  2. Check if the corresponding payment was made by matching the vault's `note` field:
+     - House → BANCO POPULAR
+     - Apple → APPLECARD GSBANK
+     - Seguro del carro → PROGRESSIVE
+     - Gasto fijo internet, luz, agua → utility payments
+  3. Status: "Pagado" if payment found, "Desviado" if not
+  4. Only vaults with withdrawals are listed
+- Total = sum of amounts where status = "Desviado"
+
+### Step 7: Calculate Sobrante
 - `sobrante = income - vault_allocations_total - sin_vault_expenses_total`
 - Set `math_check = true` if the formula balances correctly
 - If `sobrante < 0`, flag as "deficit" in the output
 
-### Step 5: Write Output
+### Step 8: Write Output
 - Write `vault_analysis.json` to DIR_PATH
 - The Stop hook (vault-validator.py) will validate the math and structure
 
